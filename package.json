@@ -1,0 +1,35 @@
+{
+  "name": "@geobadges/badgr-api-client",
+  "version": "0.0.0",
+  "description": "API Client for Accessing a Badgr Server",
+  "main": "index.js",
+  "scripts": {
+    "test": "ava"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GeoBadges/badgr-api-client.git"
+  },
+  "keywords": [
+    "badgr",
+    "geobadges",
+    "microcredentials",
+    "education",
+    "credentials",
+    "achievments",
+    "gamification"
+  ],
+  "author": "Daniel J. Dufour",
+  "license": "CC0-1.0",
+  "bugs": {
+    "url": "https://github.com/GeoBadges/badgr-api-client/issues"
+  },
+  "homepage": "https://github.com/GeoBadges/badgr-api-client#readme",
+  "devDependencies": {
+    "ava": "^3.8.2"
+  },
+  "dependencies": {
+    "axios": "^0.19.2",
+    "form-data": "^3.0.0"
+  }
+}
