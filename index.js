@@ -1,5 +1,6 @@
 const axios = require('axios');
 const FormData = require('form-data');
+const pick = require('lodash.pick');
 
 const prefix = '[badgr-api-client]';
 
@@ -57,6 +58,35 @@ class Client {
       console.error("error:", error);
       throw new Error("failed to get access token");
     }
+  }
+
+  async getBadgeAssertions({ accessToken = this.accessToken, endpoint=this.endpoint, entityId, fields=['entityId'] }) {
+    const response = await axios({
+      params: { access_token: accessToken },
+      method: 'GET',
+      url: `${endpoint}/v2/badgeclasses/${entityId}/assertions`
+    });
+    return response.data.result.map(assertion => pick(assertion, fields));
+  }
+
+  async getBadgeClasses({ accessToken = this.accessToken, endpoint=this.endpoint, fields=['entityId'] }) {
+      const response = await axios({
+          params: { access_token: accessToken },
+          method: 'GET',
+          url: `${endpoint}/v2/badgeclasses`
+      });
+      return response.data.result.map(badgeClass => pick(badgeClass, fields));
+  }
+
+  async getIssuer({ accessToken = this.accessToken, endpoint=this.endpoint, entityId, fields=['entityId', 'name'] }) {
+    if (!entityId) throw new Error('You must supply an entityId');
+    if (!accessToken) throw new Error('Access Token must be set');
+    const response = await axios({
+      params: { access_token: accessToken },
+      method: 'GET',
+      url: `${endpoint}/v2/issuers/${entityId}`
+    });
+    return pick(response.data.result[0], fields);
   }
 }
 
