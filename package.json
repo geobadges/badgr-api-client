@@ -1,9 +1,10 @@
 {
   "name": "@geobadges/badgr-api-client",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "API Client for Accessing a Badgr Server",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint index.js",
     "test": "source .env && ava"
   },
   "repository": {
@@ -26,11 +27,18 @@
   },
   "homepage": "https://github.com/GeoBadges/badgr-api-client#readme",
   "devDependencies": {
-    "ava": "^3.8.2"
+    "ava": "^3.8.2",
+    "eslint": "^7.2.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.21.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1"
   },
   "dependencies": {
     "axios": "^0.19.2",
     "form-data": "^3.0.0",
+    "lodash.assign": "^4.2.0",
     "lodash.pick": "^4.4.0"
   }
 }
