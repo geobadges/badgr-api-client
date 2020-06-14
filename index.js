@@ -21,7 +21,16 @@ class Client {
   }
 
   async initialize() {
-    this.accessToken = await this.getAccessToken();
+    const {
+      accessToken,
+      expiresIn,
+      expirationDate,
+      refreshToken
+    } = await this.getAccessToken();
+    this.accessToken = accessToken;
+    this.expiresIn = expiresIn;
+    this.expirationDate = expirationDate;
+    this.refreshToken = refreshToken;
     if (this.debug) console.log(`${prefix} initialized`);
   }
 
@@ -53,7 +62,15 @@ class Client {
       .create({ headers })
       .post(url, formData);
 
-      return response.data.access_token;
+      const { data } = response;
+
+      const accessToken = data.access_token;
+      const refreshToken = data.refresh_token;
+      const expiresIn = data.expires_in;
+      const currentDate = new Date();
+      const expirationDate = new Date(currentDate.getTime() + expiresIn * 60 * 1000);  
+      return { accessToken, refreshToken, expiresIn, expirationDate };
+
     } catch (error) {
       console.error("error:", error);
       throw new Error("failed to get access token");

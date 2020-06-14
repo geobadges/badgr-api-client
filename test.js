@@ -21,8 +21,10 @@ test('initialization', async t => {
   await api.initialize();
 
   const accessToken = api.accessToken;
+  const refreshToken = api.refreshToken;
 
   t.true(accessToken.length > 10);
+  t.true(refreshToken.length > 10);
 
 });
 
@@ -33,13 +35,20 @@ test('getting accessToken', async t => {
     endpoint: BADGR_API_CLIENT_ENDPOINT
   });
 
-  const accessToken = await api.getAccessToken({
+  const {
+    accessToken,
+    expirationDate,
+    expiresIn,
+    refreshToken
+  } = await api.getAccessToken({
     password: BADGR_API_CLIENT_PASSWORD,
     username: BADGR_API_CLIENT_USER
   });
 
   t.true(accessToken.length > 10);
-
+  t.true(refreshToken.length > 10);
+  t.true(expirationDate instanceof Date);
+  t.is(typeof expiresIn, 'number');
 });
 
 test('getting all the badge classes', async t => {
