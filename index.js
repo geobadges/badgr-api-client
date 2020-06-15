@@ -6,12 +6,13 @@ const pick = require('lodash.pick')
 const prefix = '[badgr-api-client]'
 
 class Client {
-  constructor ({ debug = false, endpoint, username, password } = {}) {
+  constructor ({ debug = false, endpoint, username, password, accessToken } = {}) {
     this.debug = debug
     this.endpoint = endpoint
     this.username = username
     this.password = password
-    if (this.debug) console.log(`${prefix} constructed Badgr API Client`)
+    this.accessToken = accessToken
+    if (this.debug) console.log(`${prefix} constructed Badgr API Client `, JSON.stringify(this))
   }
 
   log () {
@@ -88,7 +89,15 @@ class Client {
     return response.data.result.map(assertion => pick(assertion, fields))
   }
 
-  async getBackpack ({ accessToken = this.accessToken, endpoint = this.endpoint, fields = ['entityId', 'badgeclass'] }) {
+  async getBackpack ({
+    accessToken = this.accessToken,
+    endpoint = this.endpoint,
+    fields = ['entityId', 'badgeclass']
+  } = {
+    accessToken: this.accessToken,
+    endpoint: this.endpoint,
+    fields: ['entityId', 'badgeclass']
+  }) {
     const response = await axios({
       params: { access_token: accessToken },
       method: 'GET',
