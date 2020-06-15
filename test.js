@@ -58,7 +58,7 @@ test('getting backpack for accessToken', async t => {
   const { accessToken } = await api.getAccessToken();
 
   const client = new API({
-    debug: true,
+    debug: false,
     endpoint: BADGR_API_CLIENT_ENDPOINT,
     accessToken
   })
@@ -157,4 +157,28 @@ test('getting issuer by entity id', async t => {
 
   // make sure staff isn't included in the return
   t.false(issuer.hasOwnProperty('staff'))
+})
+
+test('getting badge by entity id', async t => {
+  const api = new API({
+    debug: false,
+    endpoint: BADGR_API_CLIENT_ENDPOINT,
+    password: BADGR_API_CLIENT_PASSWORD,
+    username: BADGR_API_CLIENT_USER
+  })
+
+  await api.initialize()
+
+  const badge = await api.getBadge({
+    entityId: BADGR_API_BADGE_CLASS_ENTITY_ID,
+    fields: ['name', 'entityId', 'criteriaNarrative', 'tags']
+  })
+
+  t.true(badge.hasOwnProperty('name'))
+  t.true(badge.hasOwnProperty('entityId'))
+  t.true(badge.hasOwnProperty('criteriaNarrative'))
+  t.true(badge.hasOwnProperty('tags'))
+
+  // make sure issuer isn't included in the return
+  t.false(badge.hasOwnProperty('issuer'))
 })

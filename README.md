@@ -20,6 +20,16 @@ const { accessToken, refreshToken } = await client.getAccessToken();
 // accessToken is asdfasdyfbasbdif6basdf
 ```
 
+# get a specific badge
+```javascript
+const entityId = '12asd8f7glasi8df7'; // badge id
+const fields = ['name', 'entityId', 'criteriaNarrative', 'tags'];
+const badge = await api.getBadge({
+    entityId,
+    fields
+})
+```
+
 # get assertions/claims to a badge 
 ```javascript
 const entityId = '12asd8f7glasi8df7'; // badge id

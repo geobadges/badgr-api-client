@@ -125,6 +125,32 @@ class Client {
     })
     return pick(response.data.result[0], fields)
   }
+
+  async getBadge({
+    accessToken = this.accessToken,
+    endpoint = this.endpoint,
+    entityId,
+    fields = [
+      'criteriaNarrative',
+      'criteriaUrl',
+      'description',
+      'entityId',
+      'expires',
+      'image',
+      'issuer',
+      'name',
+      'tags'
+    ]
+  }) {
+    if (!entityId) throw new Error('You must supply an entityId')
+    if (!accessToken) throw new Error('Access Token must be set')
+    const response = await axios({
+      params: { access_token: accessToken },
+      method: 'GET',
+      url: `${endpoint}/v2/badgeclasses/${entityId}`
+    });
+    return pick(response.data.result[0], fields);
+  }
 }
 
 module.exports = Client
