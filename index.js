@@ -88,6 +88,15 @@ class Client {
     return response.data.result.map(assertion => pick(assertion, fields))
   }
 
+  async getBackpack ({ accessToken = this.accessToken, endpoint = this.endpoint, fields = ['entityId', 'badgeclass'] }) {
+    const response = await axios({
+      params: { access_token: accessToken },
+      method: 'GET',
+      url: `${endpoint}/v2/backpack/assertions`
+    })
+    return response.data.result.map(assertion => pick(assertion, fields))
+  }
+
   async getBadgeClasses ({ accessToken = this.accessToken, endpoint = this.endpoint, fields = ['entityId'] }) {
     const response = await axios({
       params: { access_token: accessToken },

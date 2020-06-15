@@ -48,6 +48,25 @@ test('getting accessToken', async t => {
   t.is(typeof expiresIn, 'number')
 })
 
+test('getting backpack', async t => {
+  const api = new API({
+    debug: false,
+    endpoint: BADGR_API_CLIENT_ENDPOINT,
+    password: BADGR_API_CLIENT_PASSWORD,
+    username: BADGR_API_CLIENT_USER
+  })
+
+  await api.initialize()
+
+  const fields = ['entityId', 'issuedOn']
+  const badges = await api.getBackpack({ fields })
+
+  t.true(badges.length >= 1)
+  t.true(badges[0].hasOwnProperty('entityId'))
+  t.true(badges[0].hasOwnProperty('issuedOn'))
+  t.false(badges[0].hasOwnProperty('badgeclass'))
+})
+
 test('getting all the badge classes', async t => {
   const api = new API({
     debug: false,

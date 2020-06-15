@@ -1,9 +1,10 @@
 {
   "name": "@geobadges/badgr-api-client",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "API Client for Accessing a Badgr Server",
   "main": "index.js",
   "scripts": {
+    "fix": "eslint index.js --fix",
     "lint": "eslint index.js",
     "test": "source .env && ava"
   },
