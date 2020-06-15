@@ -40,5 +40,12 @@ const fields = ['entityId', 'name'];
 const issuer = await client.getIssuer({ entityId, fields });
 ```
 
+# get backpack
+```javascript
+const fields = ['entityId', 'image'];
+const badges = await client.getBackpack({ fields });
+// badges is an array of badges
+```
+
 # support
 Email the package author at daniel@geosurge.io or post an issue at https://github.com/GeoBadges/badgr-api-client
