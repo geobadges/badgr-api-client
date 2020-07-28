@@ -1,7 +1,8 @@
 const axios = require('axios')
 const FormData = require('form-data')
-const assign = require('lodash.assign')
-const pick = require('lodash.pick')
+
+const assign = (dest, src) => Object.keys(src).forEach(k => dest[k] = src[k]);
+const pick = (obj, keys) => keys.reduce((result, k) => ({ ...result, [k]: obj[k]}), {});
 
 const prefix = '[badgr-api-client]'
 

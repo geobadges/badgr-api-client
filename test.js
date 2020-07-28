@@ -82,8 +82,8 @@ test('getting user profile', async t => {
 
   const fields = ['entityId', 'firstName', 'lastName'];
   const profile = await api.getUser({ fields });
-  console.log("profile:", profile)
   t.true(profile.firstName.length > 0);
+  t.true(profile.lastName.length > 0);
   t.true(profile.entityId.length > 10);
   t.false(profile.hasOwnProperty('emails'));
 });
