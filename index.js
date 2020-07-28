@@ -1,8 +1,8 @@
 const axios = require('axios')
 const FormData = require('form-data')
 
-const assign = (dest, src) => Object.keys(src).forEach(k => dest[k] = src[k]);
-const pick = (obj, keys) => keys.reduce((result, k) => ({ ...result, [k]: obj[k]}), {});
+const assign = (dest, src) => Object.keys(src).forEach(k => { dest[k] = src[k] })
+const pick = (obj, keys) => keys.reduce((result, k) => ({ ...result, [k]: obj[k] }), {})
 
 const prefix = '[badgr-api-client]'
 
@@ -87,6 +87,50 @@ class Client {
     }
   }
 
+  async register ({
+    agreedToTermsOfService = false,
+    endpoint = this.endpoint,
+    email,
+    firstName,
+    lastName,
+    optedInToMarketing,
+    password
+  }) {
+    const url = `${endpoint}/v1/user/profile`
+    console.log('url:', url)
+
+    // if unsuccessful, it will throw an error
+    await axios({
+      url,
+      method: 'POST',
+      data: {
+        agreed_terms_service: agreedToTermsOfService,
+        email,
+        first_name: firstName,
+        last_name: lastName,
+        marketing_opt_in: optedInToMarketing,
+        password
+      }
+    })
+
+    // returns true if successful
+    return true
+  }
+
+  // async revokeAccessToken ({ endpoint, accessToken } = {}) {
+  //   if (this.debug) console.log(`${prefix} starting revokeAccessToken with`, { endpoint, accessToken })
+  //   endpoint = endpoint || this.endpoint
+  //   if (this.debug) console.log(`${prefix} endpoint: ${endpoint}`)
+  //   const revokeThisAccessToken = accessToken || this.accessToken
+  //   if (this.debug) console.log(`${prefix} revokeThisAccessToken: ${revokeThisAccessToken}`)
+
+  //   const entityId =
+  //   const url = `${endpoint}/v2/auth/tokens/${entityId}?access_token=${this.accessToken}`;
+  //   console.log("url:", url);
+  //   const response = await axios.delete(url)
+  //   console.log("response:", response);
+  // }
+
   async getBadgeAssertions ({ accessToken = this.accessToken, endpoint = this.endpoint, entityId, fields = ['entityId'] }) {
     const response = await axios({
       params: { access_token: accessToken },
@@ -133,7 +177,7 @@ class Client {
     return pick(response.data.result[0], fields)
   }
 
-  async getBadge({
+  async getBadge ({
     accessToken = this.accessToken,
     endpoint = this.endpoint,
     entityId,
@@ -155,11 +199,11 @@ class Client {
       params: { access_token: accessToken },
       method: 'GET',
       url: `${endpoint}/v2/badgeclasses/${entityId}`
-    });
-    return pick(response.data.result[0], fields);
+    })
+    return pick(response.data.result[0], fields)
   }
 
-  async getUser({
+  async getUser ({
     accessToken = this.accessToken,
     endpoint = this.endpoint,
     entityId = 'self',
@@ -175,9 +219,9 @@ class Client {
       params: { access_token: accessToken },
       method: 'GET',
       url: `${endpoint}/v2/users/${entityId}`
-    });
-    const user = response.data.result[0];
-    return pick(user, fields);
+    })
+    const user = response.data.result[0]
+    return pick(user, fields)
   }
 }
 

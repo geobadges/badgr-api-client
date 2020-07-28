@@ -48,6 +48,19 @@ test('getting accessToken', async t => {
   t.is(typeof expiresIn, 'number')
 })
 
+// test('revoking accessToken', async t => {
+//   const api = new API({
+//     debug: true,
+//     endpoint: BADGR_API_CLIENT_ENDPOINT,
+//     password: BADGR_API_CLIENT_PASSWORD,
+//     username: BADGR_API_CLIENT_USER
+//   })
+
+//   await api.initialize()
+
+//   await api.revokeAccessToken()
+// })
+
 test('getting backpack for accessToken', async t => {
   const api = new API({
     debug: false,
@@ -200,3 +213,21 @@ test('getting badge by entity id', async t => {
   // make sure issuer isn't included in the return
   t.false(badge.hasOwnProperty('issuer'))
 })
+
+test('registering a new user', async t => {
+  const data = {
+    agreedToTermsOfService: true,
+    email: Math.random().toString(36).slice(2) + "@example.org",
+    firstName: 'First',
+    lastName: 'Last',
+    marketingOptIn: false,
+    password: Math.random().toString(36).slice(2)
+  };
+  const api = new API({
+    debug: true,
+    endpoint: BADGR_API_CLIENT_ENDPOINT
+  })
+
+  const success = await api.register(data);
+  t.true(success);
+});

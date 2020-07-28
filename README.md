@@ -30,6 +30,20 @@ const badge = await api.getBadge({
 })
 ```
 
+# register a user
+```javascript
+const data = {
+    agreedToTermsOfService: true,
+    email: "first.last@example.org",
+    firstName: "First Name",
+    lastName: "Last Name",
+    optedInToMarketing: false,
+    password: "acomplexpassword",
+};
+const sucessful = await client.register(data);
+// sucessful is true
+```
+
 # get a specific user
 If you don't supply an entityId, it automatically returns the user
 that you used to initialize the api client.
