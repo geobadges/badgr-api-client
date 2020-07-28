@@ -6,12 +6,13 @@ const pick = require('lodash.pick')
 const prefix = '[badgr-api-client]'
 
 class Client {
-  constructor ({ debug = false, endpoint, username, password, accessToken } = {}) {
+  constructor ({ debug = false, endpoint, username, password, accessToken, admin = false } = {}) {
     this.debug = debug
     this.endpoint = endpoint
     this.username = username
     this.password = password
     this.accessToken = accessToken
+    this.admin = admin
     if (this.debug) console.log(`${prefix} constructed Badgr API Client `, JSON.stringify(this))
   }
 
@@ -35,7 +36,7 @@ class Client {
     if (this.debug) console.log(`${prefix} initialized`)
   }
 
-  async getAccessToken ({ endpoint, username, password } = {}) {
+  async getAccessToken ({ endpoint, username, password, admin = false } = {}) {
     try {
       if (this.debug) console.log(`${prefix} starting getAccessToken with`, { endpoint, username, password })
       endpoint = endpoint || this.endpoint
@@ -44,13 +45,18 @@ class Client {
       if (this.debug) console.log(`${prefix} password: ${password}`)
       username = username || this.username
       if (this.debug) console.log(`${prefix} username: ${username}`)
+      admin = admin || this.admin
+      if (this.debug) console.log(`${prefix} admin: ${admin}`)
 
       const url = endpoint + '/o/token'
+
+      const scopes = ['rw:backpack', 'rw:issuer', 'rw:profile']
+      if (admin) scopes.push('rw:serverAdmin')
 
       const formData = new FormData()
       formData.append('grant_type', 'password')
       formData.append('client_id', 'public')
-      formData.append('scope', 'rw:backpack rw:issuer rw:profile')
+      formData.append('scope', scopes.join(' '))
       formData.append('username', username)
       formData.append('password', password)
 
@@ -150,6 +156,27 @@ class Client {
       url: `${endpoint}/v2/badgeclasses/${entityId}`
     });
     return pick(response.data.result[0], fields);
+  }
+
+  async getUser({
+    accessToken = this.accessToken,
+    endpoint = this.endpoint,
+    entityId = 'self',
+    fields = [
+      'emails',
+      'entityId',
+      'firstName',
+      'lastName'
+    ]
+  }) {
+    if (!accessToken) throw new Error('Access Token must be set')
+    const response = await axios({
+      params: { access_token: accessToken },
+      method: 'GET',
+      url: `${endpoint}/v2/users/${entityId}`
+    });
+    const user = response.data.result[0];
+    return pick(user, fields);
   }
 }
 

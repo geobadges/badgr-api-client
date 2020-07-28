@@ -70,6 +70,24 @@ test('getting backpack for accessToken', async t => {
   t.true(backpack[0].hasOwnProperty('image'))
 })
 
+test('getting user profile', async t => {
+  const api = new API({
+    debug: false,
+    endpoint: BADGR_API_CLIENT_ENDPOINT,
+    password: BADGR_API_CLIENT_PASSWORD,
+    username: BADGR_API_CLIENT_USER
+  })
+
+  await api.initialize()
+
+  const fields = ['entityId', 'firstName', 'lastName'];
+  const profile = await api.getUser({ fields });
+  console.log("profile:", profile)
+  t.true(profile.firstName.length > 0);
+  t.true(profile.entityId.length > 10);
+  t.false(profile.hasOwnProperty('emails'));
+});
+
 test('getting backpack', async t => {
   const api = new API({
     debug: false,
