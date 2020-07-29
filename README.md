@@ -97,6 +97,7 @@ const badges = await client.getBackpack({ fields });
 ```
 
 # enable admin access
+Passing in `admin: true` will basically add the `rw:serverAdmin` scope to all requests.
 ```javascript
 const client = new API({ endpoint, password, username, admin: true });
 ```
