@@ -6,6 +6,9 @@ API Client for Accessing a Badgr Server
 npm install @geobadges/badgr-api-client
 ```
 
+# contributing
+Your contributions are welcomed!  This repo is open to issues and pull requests. 
+
 # usage
 # initialization
 ```javascript
