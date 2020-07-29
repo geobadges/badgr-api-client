@@ -12,6 +12,10 @@ npm install @geobadges/badgr-api-client
 const API = require("@geobadges/badgr-api-client");
 
 const client = new API({ endpoint, password, username });
+
+// gets and stores an access token for the username and password
+// that it will use for later calls
+await client.initialize();
 ```
 
 # get access token
