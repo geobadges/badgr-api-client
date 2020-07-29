@@ -20,7 +20,11 @@ await client.initialize();
 
 # get access token
 ```javascript
-const { accessToken, refreshToken } = await client.getAccessToken();
+const {
+    accessToken,
+    expirationDate,
+    refreshToken
+} = await client.getAccessToken();
 // accessToken is asdfasdyfbasbdif6basdf
 ```
 
