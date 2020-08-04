@@ -85,6 +85,14 @@ const fields = ['entityId', 'name', 'description']; // fields to include in retu
 const badges = await client.getBadgeClasses({ fields });
 ```
 
+# get available issuers
+This returns issuers that the current authenticated user has access to unless you pass in an accessToken
+```javascript
+const fields = ['entityId', 'name'];
+const issuers = await client.getIssuers({ fields });
+// an array of issuer objects
+```
+
 # get issuer details
 ```javascript
 const entityId = '12378t12uy3gkj1h2b31';

@@ -164,6 +164,27 @@ test('getting all the badge assertions', async t => {
   t.false(assertions[0].hasOwnProperty('recipient'))
 })
 
+test('getting all available issuers', async t => {
+  const api = new API({
+    debug: false,
+    endpoint: BADGR_API_CLIENT_ENDPOINT,
+    password: BADGR_API_CLIENT_PASSWORD,
+    username: BADGR_API_CLIENT_USER
+  })
+
+  await api.initialize()
+
+  const issuers = await api.getIssuers({
+    fields: ['name', 'entityId', 'description']
+  })
+
+  t.true(issuers.length >= 1);
+  t.true(issuers[0].hasOwnProperty('name'));
+  t.true(issuers[0].hasOwnProperty('description'));
+
+  t.false(issuers[0].hasOwnProperty('staff'));
+});
+
 test('getting issuer by entity id', async t => {
   const api = new API({
     debug: false,

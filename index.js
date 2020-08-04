@@ -166,6 +166,16 @@ class Client {
     return response.data.result.map(badgeClass => pick(badgeClass, fields))
   }
 
+  async getIssuers ({ accessToken = this.accessToken, endpoint = this.endpoint, fields = ['entityId', 'name'] }) {
+    if (!accessToken) throw new Error('Access Token must be set')
+    const response = await axios({
+      params: { access_token: accessToken },
+      method: 'GET',
+      url: `${endpoint}/v2/issuers`
+    })
+    return response.data.result.map(issuer => pick(issuer, fields))
+  }
+
   async getIssuer ({ accessToken = this.accessToken, endpoint = this.endpoint, entityId, fields = ['entityId', 'name'] }) {
     if (!entityId) throw new Error('You must supply an entityId')
     if (!accessToken) throw new Error('Access Token must be set')
