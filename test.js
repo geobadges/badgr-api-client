@@ -252,3 +252,25 @@ test('registering a new user', async t => {
   const success = await api.register(data);
   t.true(success);
 });
+
+test('granting a badge', async t => {
+  const api = new API({
+    debug: false,
+    endpoint: BADGR_API_CLIENT_ENDPOINT,
+    password: BADGR_API_CLIENT_PASSWORD,
+    username: BADGR_API_CLIENT_USER
+  })
+
+  await api.initialize();
+
+  const status = await api.grant({
+    badgeClassEntityId: process.env.BADGR_API_BADGE_CLASS_ENTITY_ID,
+    createNotification: false,
+    email: BADGR_API_CLIENT_USER, // granting to self
+    evidence: [],
+    issuerEntityId: process.env.BADGR_API_ISSUER_ENTITY_ID,
+    narrative: ''
+  });
+
+  t.true(status);
+});

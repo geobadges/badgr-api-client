@@ -187,6 +187,49 @@ class Client {
     return pick(response.data.result[0], fields)
   }
 
+  async grant ({
+    accessToken = this.accessToken,
+    endpoint = this.endpoint,
+    badgeClassEntityId,
+    createNotification = false,
+    email,
+    evidence = [],
+    issuerEntityId,
+    narrative = ""
+  }) {
+
+    try {
+      if (!accessToken) throw new Error('Access Token must be set')
+      if (!badgeClassEntityId) throw new Error('You must supply a badgeClassEntityId')
+      if (!issuerEntityId) throw new Error('You must supply a issuerEntityId')
+      if (!email) throw new Error('You must supply an email to grant the badge to')
+
+      const response = await axios({
+        headers: { 'Authorization': `Bearer ${accessToken}` },
+        method: 'POST',
+        url: `${endpoint}/v1/issuer/issuers/${issuerEntityId}/badges/${badgeClassEntityId}/assertions`,
+        data: {
+          badge_class: badgeClassEntityId,
+          create_notification: createNotification,
+          evidence_items: evidence,
+          issuer: issuerEntityId,
+          narrative,
+          recipient_identifier: email,
+          recipient_type: "email"
+        }
+      });
+      if (response.revoked === false) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      console.log('error:', error);
+      console.log('error.data:', error.data);
+      return false;
+    }
+  }
+
   async getBadge ({
     accessToken = this.accessToken,
     endpoint = this.endpoint,

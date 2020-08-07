@@ -107,6 +107,18 @@ const badges = await client.getBackpack({ fields });
 // badges is an array of badges
 ```
 
+# grant a badge to a user
+```javascript
+const status = await client.grant({
+    badgeClassEntityId: "asl8dyb712tyev6tvdsafasdf",
+    createNotification: false,
+    email: "person@example.org",
+    evidence = [],
+    issuerEntityId: "adsfiubashfv7asgdfasdf",
+    narrative = "This person earned the badge by creating a JavaScript Notebook that..."
+})
+```
+
 # enable admin access
 Passing in `admin: true` will basically add the `rw:serverAdmin` scope to all requests.
 ```javascript
