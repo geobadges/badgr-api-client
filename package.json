@@ -1,6 +1,6 @@
 {
   "name": "@geobadges/badgr-api-client",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "API Client for Accessing a Badgr Server",
   "main": "index.js",
   "scripts": {

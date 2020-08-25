@@ -46,6 +46,32 @@ test('getting accessToken', async t => {
   t.is(typeof expiresIn, 'number')
 })
 
+test('passing in accessToken', async t => {
+  const { accessToken } = await new API({
+    endpoint: BADGR_API_CLIENT_ENDPOINT,
+    password: BADGR_API_CLIENT_PASSWORD,
+    username: BADGR_API_CLIENT_USER
+  }).init;
+
+  t.true(accessToken.length > 10)
+
+  const api = await new API({
+    accessToken,
+    endpoint: BADGR_API_CLIENT_ENDPOINT
+  });
+
+  const data = await api.init;
+
+  t.is(data.accessToken, accessToken)
+  t.true(data.accessToken.length > 10)
+
+  const issuers = await api.getIssuers({
+    fields: ['name', 'entityId', 'description']
+  })
+
+  t.true(issuers.length >= 1);
+})
+
 // test('revoking accessToken', async t => {
 //   const api = new API({
 //     debug: true,

@@ -9,7 +9,7 @@ const prefix = '[badgr-api-client]'
 const ACCESS_TOKEN_MISSING = `${prefix} access token must be set!`
 
 class Client {
-  constructor ({ debug = false, endpoint, username, password, accessToken, admin = false } = {}) {
+  constructor ({ accessToken, debug = false, endpoint, username, password, admin = false } = {}) {
     this.debug = debug
     this.endpoint = endpoint
     this.username = username
@@ -17,7 +17,7 @@ class Client {
     this.accessToken = accessToken
     this.admin = admin
     if (this.debug) console.log(`${prefix} constructed Badgr API Client `, JSON.stringify(this))
-    this.init = username && password ? this.getAccessToken() : null
+    this.init = username && password ? this.getAccessToken() : accessToken ? Promise.resolve({ accessToken }) : null
   }
 
   log () {
