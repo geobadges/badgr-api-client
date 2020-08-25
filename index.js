@@ -6,6 +6,8 @@ const pick = (obj, keys) => keys.reduce((result, k) => ({ ...result, [k]: obj[k]
 
 const prefix = '[badgr-api-client]'
 
+const ACCESS_TOKEN_MISSING = `${prefix} access token must be set!`
+
 class Client {
   constructor ({ debug = false, endpoint, username, password, accessToken, admin = false } = {}) {
     this.debug = debug
@@ -15,26 +17,13 @@ class Client {
     this.accessToken = accessToken
     this.admin = admin
     if (this.debug) console.log(`${prefix} constructed Badgr API Client `, JSON.stringify(this))
+    this.init = username && password ? this.getAccessToken() : null
   }
 
   log () {
     if (this.debug) console.log(`${prefix} this.endpoint: ${this.endpoint}`)
     if (this.debug) console.log(`${prefix} this.password: ${this.password}`)
     if (this.debug) console.log(`${prefix} this.username: ${this.username}`)
-  }
-
-  async initialize () {
-    const {
-      accessToken,
-      expiresIn,
-      expirationDate,
-      refreshToken
-    } = await this.getAccessToken()
-    this.accessToken = accessToken
-    this.expiresIn = expiresIn
-    this.expirationDate = expirationDate
-    this.refreshToken = refreshToken
-    if (this.debug) console.log(`${prefix} initialized`)
   }
 
   async getAccessToken ({ endpoint, username, password, admin = false } = {}) {
@@ -131,9 +120,13 @@ class Client {
   //   console.log("response:", response);
   // }
 
-  async getBadgeAssertions ({ accessToken = this.accessToken, endpoint = this.endpoint, entityId, fields = ['entityId'] }) {
+  async getBadgeAssertions ({ accessToken, endpoint = this.endpoint, entityId, fields = ['entityId'] }) {
+    if (!accessToken && this.init) accessToken = (await this.init).accessToken
+    if (!accessToken) throw new Error(ACCESS_TOKEN_MISSING)
     const response = await axios({
-      params: { access_token: accessToken },
+      params: {
+        access_token: accessToken
+      },
       method: 'GET',
       url: `${endpoint}/v2/badgeclasses/${entityId}/assertions`
     })
@@ -141,14 +134,15 @@ class Client {
   }
 
   async getBackpack ({
-    accessToken = this.accessToken,
+    accessToken,
     endpoint = this.endpoint,
     fields = ['entityId', 'badgeclass']
   } = {
-    accessToken: this.accessToken,
     endpoint: this.endpoint,
     fields: ['entityId', 'badgeclass']
   }) {
+    if (!accessToken && this.init) accessToken = (await this.init).accessToken
+    if (!accessToken) throw new Error(ACCESS_TOKEN_MISSING)
     const response = await axios({
       params: { access_token: accessToken },
       method: 'GET',
@@ -157,7 +151,9 @@ class Client {
     return response.data.result.map(assertion => pick(assertion, fields))
   }
 
-  async getBadgeClasses ({ accessToken = this.accessToken, endpoint = this.endpoint, fields = ['entityId'] }) {
+  async getBadgeClasses ({ accessToken, endpoint = this.endpoint, fields = ['entityId'] }) {
+    if (!accessToken && this.init) accessToken = (await this.init).accessToken
+    if (!accessToken) throw new Error(ACCESS_TOKEN_MISSING)
     const response = await axios({
       params: { access_token: accessToken },
       method: 'GET',
@@ -166,8 +162,9 @@ class Client {
     return response.data.result.map(badgeClass => pick(badgeClass, fields))
   }
 
-  async getIssuers ({ accessToken = this.accessToken, endpoint = this.endpoint, fields = ['entityId', 'name'] }) {
-    if (!accessToken) throw new Error('Access Token must be set')
+  async getIssuers ({ accessToken, endpoint = this.endpoint, fields = ['entityId', 'name'] }) {
+    if (!accessToken && this.init) accessToken = (await this.init).accessToken
+    if (!accessToken) throw new Error(ACCESS_TOKEN_MISSING)
     const response = await axios({
       params: { access_token: accessToken },
       method: 'GET',
@@ -176,9 +173,10 @@ class Client {
     return response.data.result.map(issuer => pick(issuer, fields))
   }
 
-  async getIssuer ({ accessToken = this.accessToken, endpoint = this.endpoint, entityId, fields = ['entityId', 'name'] }) {
+  async getIssuer ({ accessToken, endpoint = this.endpoint, entityId, fields = ['entityId', 'name'] }) {
     if (!entityId) throw new Error('You must supply an entityId')
-    if (!accessToken) throw new Error('Access Token must be set')
+    if (!accessToken && this.init) accessToken = (await this.init).accessToken
+    if (!accessToken) throw new Error(ACCESS_TOKEN_MISSING)
     const response = await axios({
       params: { access_token: accessToken },
       method: 'GET',
@@ -188,24 +186,25 @@ class Client {
   }
 
   async grant ({
-    accessToken = this.accessToken,
+    accessToken,
     endpoint = this.endpoint,
     badgeClassEntityId,
     createNotification = false,
+    debug = this.debug,
     email,
     evidence = [],
     issuerEntityId,
-    narrative = ""
+    narrative = ''
   }) {
-
     try {
-      if (!accessToken) throw new Error('Access Token must be set')
+      if (!accessToken && this.init) accessToken = (await this.init).accessToken
+      if (!accessToken) throw new Error(ACCESS_TOKEN_MISSING)
       if (!badgeClassEntityId) throw new Error('You must supply a badgeClassEntityId')
       if (!issuerEntityId) throw new Error('You must supply a issuerEntityId')
       if (!email) throw new Error('You must supply an email to grant the badge to')
 
       const response = await axios({
-        headers: { 'Authorization': `Bearer ${accessToken}` },
+        headers: { Authorization: `Bearer ${accessToken}` },
         method: 'POST',
         url: `${endpoint}/v1/issuer/issuers/${issuerEntityId}/badges/${badgeClassEntityId}/assertions`,
         data: {
@@ -215,23 +214,26 @@ class Client {
           issuer: issuerEntityId,
           narrative,
           recipient_identifier: email,
-          recipient_type: "email"
+          recipient_type: 'email'
         }
-      });
-      if (response.revoked === false) {
-        return true;
+      })
+      if (debug) console.log('[badgr-api-client.grant] response.status:', response.status)
+      if (debug) console.log('[badgr-api-client.grant] response.revoked :', response.revoked)
+      // eslint-disable-next-line no-prototype-builtins
+      if (!response.hasOwnProperty('revoked') || response.revoked === false) {
+        return true
       } else {
-        return false;
+        return false
       }
     } catch (error) {
-      console.log('error:', error);
-      console.log('error.data:', error.data);
-      return false;
+      console.log('error:', error)
+      console.log('error.data:', error.data)
+      return false
     }
   }
 
   async getBadge ({
-    accessToken = this.accessToken,
+    accessToken,
     endpoint = this.endpoint,
     entityId,
     fields = [
@@ -246,8 +248,9 @@ class Client {
       'tags'
     ]
   }) {
+    if (!accessToken && this.init) accessToken = (await this.init).accessToken
+    if (!accessToken) throw new Error(ACCESS_TOKEN_MISSING)
     if (!entityId) throw new Error('You must supply an entityId')
-    if (!accessToken) throw new Error('Access Token must be set')
     const response = await axios({
       params: { access_token: accessToken },
       method: 'GET',
@@ -257,7 +260,7 @@ class Client {
   }
 
   async getUser ({
-    accessToken = this.accessToken,
+    accessToken,
     endpoint = this.endpoint,
     entityId = 'self',
     fields = [
@@ -267,7 +270,8 @@ class Client {
       'lastName'
     ]
   }) {
-    if (!accessToken) throw new Error('Access Token must be set')
+    if (!accessToken && this.init) accessToken = (await this.init).accessToken
+    if (!accessToken) throw new Error(ACCESS_TOKEN_MISSING)
     const response = await axios({
       params: { access_token: accessToken },
       method: 'GET',

@@ -17,14 +17,12 @@ test('initialization', async t => {
     username: BADGR_API_CLIENT_USER
   })
 
-  await api.initialize()
-
-  const accessToken = api.accessToken
-  const refreshToken = api.refreshToken
+  const { accessToken, refreshToken} = await api.init;
 
   t.true(accessToken.length > 10)
   t.true(refreshToken.length > 10)
 })
+
 
 test('getting accessToken', async t => {
   const api = new API({
@@ -55,8 +53,6 @@ test('getting accessToken', async t => {
 //     password: BADGR_API_CLIENT_PASSWORD,
 //     username: BADGR_API_CLIENT_USER
 //   })
-
-//   await api.initialize()
 
 //   await api.revokeAccessToken()
 // })
@@ -91,8 +87,6 @@ test('getting user profile', async t => {
     username: BADGR_API_CLIENT_USER
   })
 
-  await api.initialize()
-
   const fields = ['entityId', 'firstName', 'lastName'];
   const profile = await api.getUser({ fields });
   t.true(profile.firstName.length > 0);
@@ -108,8 +102,6 @@ test('getting backpack', async t => {
     password: BADGR_API_CLIENT_PASSWORD,
     username: BADGR_API_CLIENT_USER
   })
-
-  await api.initialize()
 
   const fields = ['entityId', 'issuedOn']
   const badges = await api.getBackpack({ fields })
@@ -127,8 +119,6 @@ test('getting all the badge classes', async t => {
     password: BADGR_API_CLIENT_PASSWORD,
     username: BADGR_API_CLIENT_USER
   })
-
-  await api.initialize()
 
   const badges = await api.getBadgeClasses({
     fields: ['entityId', 'name']
@@ -150,8 +140,6 @@ test('getting all the badge assertions', async t => {
     username: BADGR_API_CLIENT_USER
   })
 
-  await api.initialize()
-
   const assertions = await api.getBadgeAssertions({
     entityId: BADGR_API_BADGE_CLASS_ENTITY_ID,
     fields: ['entityId', 'name']
@@ -172,8 +160,6 @@ test('getting all available issuers', async t => {
     username: BADGR_API_CLIENT_USER
   })
 
-  await api.initialize()
-
   const issuers = await api.getIssuers({
     fields: ['name', 'entityId', 'description']
   })
@@ -192,8 +178,6 @@ test('getting issuer by entity id', async t => {
     password: BADGR_API_CLIENT_PASSWORD,
     username: BADGR_API_CLIENT_USER
   })
-
-  await api.initialize()
 
   const issuer = await api.getIssuer({
     entityId: BADGR_API_ISSUER_ENTITY_ID,
@@ -218,8 +202,6 @@ test('getting badge by entity id', async t => {
     password: BADGR_API_CLIENT_PASSWORD,
     username: BADGR_API_CLIENT_USER
   })
-
-  await api.initialize()
 
   const badge = await api.getBadge({
     entityId: BADGR_API_BADGE_CLASS_ENTITY_ID,
@@ -255,17 +237,16 @@ test('registering a new user', async t => {
 
 test('granting a badge', async t => {
   const api = new API({
-    debug: false,
+    debug: true,
     endpoint: BADGR_API_CLIENT_ENDPOINT,
     password: BADGR_API_CLIENT_PASSWORD,
     username: BADGR_API_CLIENT_USER
   })
 
-  await api.initialize();
-
   const status = await api.grant({
     badgeClassEntityId: process.env.BADGR_API_BADGE_CLASS_ENTITY_ID,
     createNotification: false,
+    debug: true,
     email: BADGR_API_CLIENT_USER, // granting to self
     evidence: [],
     issuerEntityId: process.env.BADGR_API_ISSUER_ENTITY_ID,

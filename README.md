@@ -15,10 +15,6 @@ Your contributions are welcomed!  This repo is open to issues and pull requests.
 const API = require("@geobadges/badgr-api-client");
 
 const client = new API({ endpoint, password, username });
-
-// gets and stores an access token for the username and password
-// that it will use for later calls
-await client.initialize();
 ```
 
 # get access token
