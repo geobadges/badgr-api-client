@@ -51,6 +51,15 @@ const sucessful = await client.register(data);
 // sucessful is true
 ```
 
+# request a password reset
+```javascript
+const data = {
+    email: "first.last@example.org"
+};
+const successful = await client.requestPasswordReset(data);
+// successful is true if HTTP request, requesting a reset, returned successfully
+```
+
 # get a specific user
 If you don't supply an entityId, it automatically returns the user
 that you used to initialize the api client.
