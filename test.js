@@ -7,7 +7,8 @@ const {
   BADGR_API_CLIENT_USER,
   BADGR_API_ISSUER_ENTITY_ID,
   BADGR_API_BADGE_CLASS_ENTITY_ID,
-  BADGR_API_CLIENT_USER_FOR_RESET
+  BADGR_API_CLIENT_USER_FOR_RESET,
+  BADGR_API_CLIENT_USER_FOR_GRANT
 } = process.env
 
 test('initialization', async t => {
@@ -262,15 +263,6 @@ test('registering a new user', async t => {
   t.true(success);
 });
 
-test('requesting a password reset email', async t => {
-  const api = new API({
-    debug: true,
-    endpoint: "https://api.geobadges.io"
-  });
-  const success = await api.requestPasswordReset({ email: BADGR_API_CLIENT_USER_FOR_RESET });
-  t.true(success);
-});
-
 test('granting a badge', async t => {
   const api = new API({
     debug: true,
@@ -281,13 +273,22 @@ test('granting a badge', async t => {
 
   const status = await api.grant({
     badgeClassEntityId: process.env.BADGR_API_BADGE_CLASS_ENTITY_ID,
-    createNotification: false,
+    createNotification: true,
     debug: true,
-    email: BADGR_API_CLIENT_USER, // granting to self
+    email: BADGR_API_CLIENT_USER_FOR_GRANT, // granting to self
     evidence: [],
     issuerEntityId: process.env.BADGR_API_ISSUER_ENTITY_ID,
     narrative: ''
   });
 
   t.true(status);
+});
+
+test('requesting a password reset email', async t => {
+  const api = new API({
+    debug: true,
+    endpoint: BADGR_API_CLIENT_ENDPOINT
+  });
+  const success = await api.requestPasswordReset({ email: BADGR_API_CLIENT_USER_FOR_RESET });
+  t.true(success);
 });

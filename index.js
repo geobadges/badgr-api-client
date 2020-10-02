@@ -106,6 +106,41 @@ class Client {
         }
     }
 
+    async resetPassword({
+        accessToken,
+        endpoint = this.endpoint,
+        token,
+        newPassword,
+    }) {
+        if (!token) {
+            throw new Error(
+                "[badgr-api-client] can't reset the password without a verification token.  Run client.requestPasswordReset({ email })"
+            );
+        }
+        const url = `${endpoint}/v2/auth/forgot-password`;
+        const result = {};
+        try {
+            const formData = new FormData();
+            formData.append("token", token);
+            formData.append("password", newPassword);
+
+            const headers = {};
+            if (formData.getHeaders) {
+                assign(headers, formData.getHeaders());
+            }
+            if (formData.getLengthSync) {
+                headers["Content-Length"] = formData.getLengthSync();
+            }
+            const response = await axios.create({ headers }).put(url, formData);
+            result.data = response.data || null;
+            result.success = response.data?.status?.success || false;
+        } catch (error) {
+            result.success = false;
+            result.data = error.response.data;
+        }
+        return result;
+    }
+
     async requestPasswordReset({ email, endpoint = this.endpoint }) {
         if (!email)
             throw new Error(
