@@ -166,6 +166,44 @@ class Client {
         return JSON.stringify(data) === "{}";
     }
 
+    async confirmEmail({
+        appId = 1,
+        confirmId,
+        endpoint = this.endpoint,
+        token,
+    }) {
+        const result = {};
+        try {
+            const url = `${endpoint}/v2/auth/confirm-email/${confirmId}?a=${appId}&token=${token}`;
+            const response = await axios.get(url);
+            const { data } = response;
+            result.data = data;
+            result.success = true;
+        } catch (error) {
+            const responseURL = error?.response?.request?.responseURL;
+            if (responseURL.includes("authError=")) {
+                const message = decodeURIComponent(
+                    /authError=([^/&]*)/.exec(responseURL)[1]
+                );
+                result.data = { error: message };
+                result.success = false;
+            } else if (responseURL.includes("authCode=")) {
+                const authCode = decodeURIComponent(
+                    /authCode=([^/&]*)/.exec(responseURL)[1]
+                );
+                const email = decodeURIComponent(
+                    /email=([^/&]*)/.exec(responseURL)[1]
+                );
+                result.data = { authCode, email };
+                result.success = true;
+            } else {
+                result.data = error.response.data;
+                result.success = false;
+            }
+        }
+        return result;
+    }
+
     async register({
         agreedToTermsOfService = false,
         endpoint = this.endpoint,
