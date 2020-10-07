@@ -169,18 +169,24 @@ class Client {
     async confirmEmail({
         appId = 1,
         confirmId,
+        debug = false,
         endpoint = this.endpoint,
         token,
     }) {
+        if (debug) console.log("[badgr-api-client] starting confirmEmail with", { appId, confirmId, endpoint, token });
         const result = {};
         try {
             const url = `${endpoint}/v2/auth/confirm-email/${confirmId}?a=${appId}&token=${token}`;
+            if (debug) console.log(`[badgr-api-client] getting "${url}"`);
             const response = await axios.get(url);
+            if (debug) console.log("[badgr-api-client] response:", response);
             const { data } = response;
+            if (debug) console.log("[badgr-api-client] data:", data);
             result.data = data;
             result.success = true;
         } catch (error) {
             const responseURL = error?.response?.request?.responseURL;
+            if (debug) console.log("[badgr-api-client] responseURL:", responseURL);
             if (responseURL.includes("authError=")) {
                 const message = decodeURIComponent(
                     /authError=([^/&]*)/.exec(responseURL)[1]
@@ -201,6 +207,7 @@ class Client {
                 result.success = false;
             }
         }
+        if (debug) console.log("[badgr-api-client] confirmEmail finishing with", result);
         return result;
     }
 
