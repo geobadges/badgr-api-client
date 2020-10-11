@@ -173,7 +173,13 @@ class Client {
         endpoint = this.endpoint,
         token,
     }) {
-        if (debug) console.log("[badgr-api-client] starting confirmEmail with", { appId, confirmId, endpoint, token });
+        if (debug)
+            console.log("[badgr-api-client] starting confirmEmail with", {
+                appId,
+                confirmId,
+                endpoint,
+                token,
+            });
         const result = {};
         try {
             const url = `${endpoint}/v2/auth/confirm-email/${confirmId}?a=${appId}&token=${token}`;
@@ -186,7 +192,8 @@ class Client {
             result.success = true;
         } catch (error) {
             const responseURL = error?.response?.request?.responseURL;
-            if (debug) console.log("[badgr-api-client] responseURL:", responseURL);
+            if (debug)
+                console.log("[badgr-api-client] responseURL:", responseURL);
             if (responseURL.includes("authError=")) {
                 const message = decodeURIComponent(
                     /authError=([^/&]*)/.exec(responseURL)[1]
@@ -207,7 +214,11 @@ class Client {
                 result.success = false;
             }
         }
-        if (debug) console.log("[badgr-api-client] confirmEmail finishing with", result);
+        if (debug)
+            console.log(
+                "[badgr-api-client] confirmEmail finishing with",
+                result
+            );
         return result;
     }
 
