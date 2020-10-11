@@ -132,8 +132,10 @@ class Client {
                 headers["Content-Length"] = formData.getLengthSync();
             }
             const response = await axios.create({ headers }).put(url, formData);
-            result.data = response.data || null;
-            result.success = response.data?.status?.success || false;
+            const { data } = response;
+            result.data = data || null;
+            result.success =
+                typeof data.status === "object" ? data.status.success : false;
         } catch (error) {
             result.success = false;
             result.data = error.response.data;
@@ -191,7 +193,16 @@ class Client {
             result.data = data;
             result.success = true;
         } catch (error) {
-            const responseURL = error?.response?.request?.responseURL;
+            let responseURL = "";
+            if (
+                error &&
+                error.response &&
+                error.response.request &&
+                error.response.request.responseURL
+            ) {
+                responseURL = error.response.request.responseURL;
+            }
+
             if (debug)
                 console.log("[badgr-api-client] responseURL:", responseURL);
             if (responseURL.includes("authError=")) {
